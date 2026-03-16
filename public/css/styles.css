@@ -352,8 +352,7 @@ a:hover {
    DISCLAIMER
 ───────────────────────────────────────────────────────── */
 .disclaimer {
-  align-self: stretch;   /* Stretch to full width, then max-width + margin:auto centers it */
-  max-width: 660px;
+  width: min(100%, 660px);
   margin: 2.5rem auto;
   padding: 1.25rem 1.5rem;
   background: #f5f3ef;
@@ -888,8 +887,7 @@ a:hover {
 
 /* Section wrapper on the home page */
 .topic-section {
-  align-self: stretch;   /* Stretch to full page width inside the flex column */
-  max-width: var(--max-width);
+  width: min(100%, var(--max-width));
   margin: 0 auto 2rem;
   padding: 0 1.5rem;
 }
