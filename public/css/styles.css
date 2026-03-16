@@ -509,6 +509,15 @@ a:hover {
   margin-bottom: 0.25rem;
 }
 
+.doc-title-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+.doc-title-link:hover {
+  text-decoration: underline;
+}
+
 .doc-excerpt {
   font-size: 0.8rem;
   color: var(--text-muted);

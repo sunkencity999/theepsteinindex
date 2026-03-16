@@ -322,26 +322,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // RENDER HELPERS — Document Card
   // ─────────────────────────────────────────────────────
   function renderDocCard(doc) {
-    const date  = doc.document_date ? formatDate(doc.document_date) : '';
-    const type  = doc.document_type ? formatDocType(doc.document_type) : '';
-    const source = doc.source       ? formatSource(doc.source)         : '';
+    const date   = doc.document_date ? formatDate(doc.document_date)   : '';
+    const type   = doc.document_type ? formatDocType(doc.document_type) : '';
+    const source = doc.source        ? formatSource(doc.source)         : '';
 
-    // Use source_url if available, fall back to file_url (the direct PDF link).
-    // Either way, we want the user to be able to open the actual document.
+    // Use source_url if available, fall back to file_url (direct PDF link).
     const docUrl = doc.source_url || doc.file_url || '';
-    const linkHtml = docUrl
-      ? `<a href="${escapeHtml(docUrl)}" target="_blank" rel="noopener">View document ↗</a>`
-      : '';
+
+    // Make the title itself the link — far more visible than a small "View" link
+    const titleHtml = docUrl
+      ? `<a class="doc-title-link" href="${escapeHtml(docUrl)}" target="_blank" rel="noopener">${escapeHtml(doc.title || 'Untitled Document')} ↗</a>`
+      : `<span>${escapeHtml(doc.title || 'Untitled Document')}</span>`;
 
     return `
       <div class="doc-card">
-        <div class="doc-title">${escapeHtml(doc.title || 'Untitled Document')}</div>
+        <div class="doc-title">${titleHtml}</div>
         <div class="doc-excerpt">${escapeHtml(doc.excerpt || '')}</div>
         <div class="doc-meta">
           ${date   ? `<span>${date}</span>`   : ''}
           ${type   ? `<span>${type}</span>`   : ''}
           ${source ? `<span>${source}</span>` : ''}
-          ${linkHtml}
         </div>
       </div>
     `;
