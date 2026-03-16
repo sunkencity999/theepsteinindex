@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Crimson rounded background -->
+  <rect width="32" height="32" rx="5" fill="#8b1a1a"/>
+  <!-- Bold E — left bar + three horizontal bars -->
+  <path d="M7,6 h18 v4 h-14 v4 h12 v4 h-12 v4 h14 v4 h-18 v-20 z" fill="#ffffff"/>
+</svg>
