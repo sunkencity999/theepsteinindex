@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--
+  index.html — The main (and only) HTML page
+  ─────────────────────────────────────────────────────────
+  This is a "Single Page Application" (SPA). That means the
+  browser loads this one HTML file, and then JavaScript
+  handles all the navigation and content changes without
+  ever reloading the page. It's faster and feels more like
+  a native app.
+
+  The page has three "views" (screens) that are shown/hidden:
+    1. #view-home    — the landing page with the search bar
+    2. #view-results — the list of search results
+    3. #view-person  — the full profile of one individual
+
+  Only one view is visible at a time.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Page title shown in browser tab -->
+  <title>The Epstein Index — Public Accountability Archive</title>
+
+  <!-- SEO description for search engines -->
+  <meta name="description"
+    content="Search the publicly released Epstein files, court records, flight logs, and connections. A non-commercial public interest research tool." />
+
+  <!--
+    Google Fonts: we load two typefaces.
+    - Playfair Display: an elegant serif for headlines (like a serious newspaper)
+    - Inter: a clean sans-serif for body text and UI elements (modern and readable)
+    These are loaded from Google's CDN — no install needed.
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Our custom stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+       SITE HEADER — shown on every view
+       Contains the logo/name and a persistent search bar
+       (the persistent bar only appears once you've searched)
+  ═══════════════════════════════════════════════════ -->
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+
+      <!-- Clicking the logo returns to the home view -->
+      <a href="#" class="site-logo" id="logo-link">
+        <span class="logo-main">The Epstein Index</span>
+        <span class="logo-sub">Public Accountability Archive</span>
+      </a>
+
+      <!-- This compact search bar appears in the header once
+           the user has already done a search (replaces the big
+           homepage search bar) -->
+      <div class="header-search" id="header-search" style="display:none;">
+        <input
+          type="text"
+          id="header-search-input"
+          class="header-search-input"
+          placeholder="Search names, documents…"
+          autocomplete="off"
+        />
+        <button class="header-search-btn" id="header-search-btn">Search</button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════
+       MAIN CONTENT AREA
+       This is where the three views live. Only one is
+       visible at a time (controlled by JavaScript).
+  ═══════════════════════════════════════════════════ -->
+  <main id="main-content">
+
+    <!-- ─────────────────────────────────────────────
+         VIEW 1: HOME — The landing page
+    ───────────────────────────────────────────── -->
+    <section id="view-home" class="view view-home active">
+
+      <!-- Big hero heading -->
+      <div class="hero">
+        <h1 class="hero-title">The Epstein Index</h1>
+        <p class="hero-subtitle">
+          Search 2.3 million+ government-released documents, flight logs,
+          court records, and connections from the Jeffrey Epstein investigation.
+          All data is sourced from official U.S. government disclosures.
+        </p>
+
+        <!-- ── MAIN SEARCH BAR ── -->
+        <div class="search-container">
+          <div class="search-box">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input
+              type="text"
+              id="home-search-input"
+              class="search-input"
+              placeholder="Enter a name — e.g. Ghislaine Maxwell, Prince Andrew…"
+              autocomplete="off"
+              autofocus
+            />
+            <button class="search-btn" id="home-search-btn">Search</button>
+          </div>
+
+          <!-- Example searches to guide first-time visitors -->
+          <div class="search-examples">
+            <span class="examples-label">Try:</span>
+            <button class="example-tag" data-query="Ghislaine Maxwell">Ghislaine Maxwell</button>
+            <button class="example-tag" data-query="Prince Andrew">Prince Andrew</button>
+            <button class="example-tag" data-query="Alan Dershowitz">Alan Dershowitz</button>
+            <button class="example-tag" data-query="Bill Clinton">Bill Clinton</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── DATA STATS STRIP ── -->
+      <!-- These numbers give the user a sense of the scale
+           of the archive they're searching. -->
+      <div class="stats-strip">
+        <div class="stat">
+          <span class="stat-number">2.3M+</span>
+          <span class="stat-label">Documents</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">23,540+</span>
+          <span class="stat-label">Named Individuals</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">4,700+</span>
+          <span class="stat-label">Flight Records</span>
+        </div>
+        <div class="stat">
+          <span class="stat-number">383,000+</span>
+          <span class="stat-label">Emails Indexed</span>
+        </div>
+      </div>
+
+      <!-- ── BROWSE BY TOPIC ── -->
+      <!-- This section lets users explore the archive by theme rather
+           than by searching for a specific name. Topics are loaded
+           dynamically from /api/topic so no hard-coding needed. -->
+      <div class="topic-section" id="topic-section">
+        <h2 class="topic-section-title">Browse by Topic</h2>
+        <p class="topic-section-subtitle">
+          Don't know a name? Follow a thread. Each topic searches
+          across 2.3 million documents for a specific theme.
+        </p>
+        <div class="topic-grid" id="topic-grid">
+          <!-- Filled in by JavaScript after fetching /api/topic -->
+          <div class="loading" style="padding:2rem 0;"><div class="spinner"></div></div>
+        </div>
+      </div>
+
+      <!-- ── DISCLAIMER ── -->
+      <div class="disclaimer">
+        <p>
+          <strong>About this tool:</strong> The Epstein Index is a non-commercial public interest
+          research tool. All information is sourced from official U.S. government disclosures,
+          court documents, FBI releases, and FOIA responses.
+          <strong>Appearance in this database does not imply guilt or wrongdoing</strong> —
+          it reflects only that a person's name appears in the public record.
+        </p>
+      </div>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         VIEW 2: SEARCH RESULTS
+    ───────────────────────────────────────────── -->
+    <section id="view-results" class="view view-results" style="display:none;">
+
+      <!-- Back button — returns to the home page -->
+      <button class="back-btn" id="results-back-btn">← Back</button>
+
+      <!-- Result count and query summary -->
+      <div class="results-header">
+        <h2 class="results-title" id="results-title">Results</h2>
+        <p class="results-meta" id="results-meta"></p>
+      </div>
+
+      <!-- Topic context banner — only shown when browsing by topic -->
+      <div class="topic-context" id="topic-context" style="display:none;">
+        <p class="topic-context-desc" id="topic-context-desc"></p>
+        <div class="topic-context-tags" id="topic-context-tags"></div>
+      </div>
+
+      <!-- Loading spinner — shown while fetching results -->
+      <div class="loading" id="results-loading" style="display:none;">
+        <div class="spinner"></div>
+        <p>Searching the archive…</p>
+      </div>
+
+      <!-- Error message — shown if the search fails -->
+      <div class="error-msg" id="results-error" style="display:none;"></div>
+
+      <!-- Two columns: people on the left, documents on the right -->
+      <div class="results-grid">
+
+        <!-- People / Entities column -->
+        <div class="results-col results-col-people">
+          <h3 class="col-heading">People in the Files</h3>
+          <div id="entity-results"></div>
+        </div>
+
+        <!-- Documents column -->
+        <div class="results-col results-col-docs">
+          <h3 class="col-heading">Matching Documents</h3>
+          <div id="document-results"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ─────────────────────────────────────────────
+         VIEW 3: PERSON PROFILE
+    ───────────────────────────────────────────── -->
+    <section id="view-person" class="view view-person" style="display:none;">
+
+      <!-- Back button -->
+      <button class="back-btn" id="back-btn">← Back to results</button>
+
+      <!-- Loading spinner for profile -->
+      <div class="loading" id="person-loading" style="display:none;">
+        <div class="spinner"></div>
+        <p>Loading profile…</p>
+      </div>
+
+      <!-- Error state -->
+      <div class="error-msg" id="person-error" style="display:none;"></div>
+
+      <!-- The actual profile content — filled in by JavaScript -->
+      <div id="person-profile" style="display:none;">
+
+        <!-- Name and summary stats at the top -->
+        <div class="person-hero">
+          <h1 class="person-name" id="person-name"></h1>
+          <p class="person-role" id="person-role"></p>
+          <div class="person-stats" id="person-stats"></div>
+        </div>
+
+        <!-- Four info panels in a grid -->
+        <div class="profile-grid">
+
+          <!-- Panel 1: Archive summary -->
+          <div class="profile-panel">
+            <h3 class="panel-title">In the Epstein Archive</h3>
+            <div id="panel-archive"></div>
+          </div>
+
+          <!-- Panel 2: Flight records -->
+          <div class="profile-panel">
+            <h3 class="panel-title">Flight Records</h3>
+            <div id="panel-flights"></div>
+          </div>
+
+          <!-- Panel 3: Court / Legal records -->
+          <div class="profile-panel">
+            <h3 class="panel-title">Court Records</h3>
+            <div id="panel-court"></div>
+          </div>
+
+          <!-- Panel 4: Recent news -->
+          <div class="profile-panel">
+            <h3 class="panel-title">Recent News</h3>
+            <div id="panel-news"></div>
+          </div>
+
+        </div>
+
+        <!-- Documents section — full width below the grid -->
+        <div class="profile-documents">
+          <h3 class="panel-title">Documents Mentioning This Person</h3>
+          <div id="panel-documents"></div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>
+        The Epstein Index — A non-commercial public interest research tool.<br />
+        All data sourced from official U.S. government disclosures, court records,
+        and FOIA releases. <strong>Inclusion does not imply guilt.</strong>
+      </p>
+      <p class="footer-sources">
+        Sources:
+        <a href="https://www.justice.gov/epstein" target="_blank" rel="noopener">DOJ Epstein Library</a> ·
+        <a href="https://vault.fbi.gov/jeffrey-epstein" target="_blank" rel="noopener">FBI Vault</a> ·
+        <a href="https://www.courtlistener.com" target="_blank" rel="noopener">CourtListener</a> ·
+        <a href="https://www.epsteininvestigation.org" target="_blank" rel="noopener">Epstein Investigation Archive</a> ·
+        <a href="mailto:support@theepsteinindex.com">Contact</a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Load our JavaScript app last, so the HTML is ready before the script runs -->
+  <script src="js/app.js"></script>
+
+</body>
+</html>

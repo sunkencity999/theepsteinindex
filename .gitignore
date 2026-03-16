@@ -1,0 +1,35 @@
+# ─────────────────────────────────────────────────────────
+# .gitignore — The Epstein Index
+# ─────────────────────────────────────────────────────────
+
+# Dependencies — never commit these, npm install recreates them
+node_modules/
+
+# Environment variables — contains database passwords
+.env
+.env.*
+
+# Deployment script — contains production DB password in source
+deploy_do.js
+
+# Local JSON cache from the old lowdb setup
+server/db/cache.json
+cache.json
+
+# Windows PowerShell scripts (local dev tools only)
+*.ps1
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+*.log
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor directories
+.vscode/
+.idea/
+deploy.js
+deploy_file.js

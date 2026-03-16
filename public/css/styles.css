@@ -1,0 +1,1159 @@
+/* ═══════════════════════════════════════════════════════════
+   styles.css — The Epstein Index
+   ═══════════════════════════════════════════════════════════
+   This file controls everything visual: colors, fonts,
+   spacing, layout, and responsive behavior.
+
+   DESIGN PHILOSOPHY:
+   We're going for a serious, journalistic aesthetic —
+   think ProPublica or The New York Times Investigations desk.
+   Typography is the hero. Clean whitespace. No distractions.
+
+   COLOR PALETTE:
+   - Background:   #fafaf8  (warm off-white, easier on eyes than pure white)
+   - Text:         #1a1a1a  (near-black, softer than #000000)
+   - Accent:       #8b1a1a  (deep crimson — serious, authoritative)
+   - Muted text:   #6b6b6b  (gray for secondary info)
+   - Borders:      #e0ddd8  (subtle warm gray)
+   - Panel bg:     #ffffff  (pure white for cards/panels)
+
+   TYPOGRAPHY:
+   - Headlines:    Playfair Display (elegant serif)
+   - Body/UI:      Inter (clean sans-serif)
+═══════════════════════════════════════════════════════════ */
+
+
+/* ─────────────────────────────────────────────────────────
+   CSS CUSTOM PROPERTIES (Variables)
+   Define our design tokens once here so we can reuse them
+   throughout the file. Changing a color here changes it
+   everywhere automatically.
+───────────────────────────────────────────────────────── */
+:root {
+  --bg:            #fafaf8;
+  --bg-panel:      #ffffff;
+  --text:          #1a1a1a;
+  --text-muted:    #6b6b6b;
+  --accent:        #8b1a1a;
+  --accent-hover:  #6d1515;
+  --border:        #e0ddd8;
+  --border-strong: #b5b0a8;
+  --font-serif:    'Playfair Display', Georgia, serif;
+  --font-sans:     'Inter', system-ui, -apple-system, sans-serif;
+  --radius:        6px;
+  --shadow:        0 1px 4px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+  --max-width:     1100px;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   RESET & BASE STYLES
+   Remove browser default styles and set sensible baselines.
+───────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;  /* Include padding/border in element width — prevents layout surprises */
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;         /* Base font size — all "rem" units are relative to this */
+  scroll-behavior: smooth; /* Smooth scrolling when navigating to anchors */
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100vh;       /* At least full viewport height */
+}
+
+/* All links default to accent color, no underline until hover */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SITE HEADER
+───────────────────────────────────────────────────────── */
+.site-header {
+  background: var(--bg-panel);
+  border-bottom: 1px solid var(--border);
+  position: sticky;         /* Sticks to the top of the viewport while scrolling */
+  top: 0;
+  z-index: 100;             /* Appear above other content */
+  padding: 0.75rem 1.5rem;
+}
+
+.header-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* The site logo/name in the header */
+.site-logo {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--text);
+  flex-shrink: 0;
+}
+
+.logo-main {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.logo-sub {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Compact header search (appears after first search) */
+.header-search {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+  max-width: 480px;
+}
+
+.header-search-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  background: var(--bg);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.header-search-input:focus {
+  border-color: var(--accent);
+}
+
+.header-search-btn {
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.header-search-btn:hover {
+  background: var(--accent-hover);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   HERO SECTION (Home View)
+───────────────────────────────────────────────────────── */
+.view-home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero {
+  text-align: center;
+  padding: 5rem 1.5rem 3rem;
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.5rem, 6vw, 4rem);  /* Responsive: scales with screen width */
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+/* A thin decorative line under the title — a typographic touch */
+.hero-title::after {
+  content: '';
+  display: block;
+  width: 3rem;
+  height: 3px;
+  background: var(--accent);
+  margin: 0.75rem auto 0;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 560px;
+  margin: 1.5rem auto 2.5rem;
+}
+
+/* ─────────────────────────────────────────────────────────
+   MAIN SEARCH BOX
+───────────────────────────────────────────────────────── */
+.search-container {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: var(--bg-panel);
+  border: 2px solid var(--border-strong);
+  border-radius: 50px;   /* Pill shape */
+  padding: 0.4rem 0.4rem 0.4rem 1.25rem;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-box:focus-within {
+  /* When any input inside the box is focused, highlight the whole box */
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(139, 26, 26, 0.1);
+}
+
+.search-icon {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-right: 0.75rem;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  color: var(--text);
+  min-width: 0;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-btn {
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 0.65rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.search-btn:hover {
+  background: var(--accent-hover);
+}
+
+/* Example search tags */
+.search-examples {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.examples-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.example-tag {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: 50px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+
+.example-tag:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(139, 26, 26, 0.04);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   STATS STRIP
+───────────────────────────────────────────────────────── */
+.stats-strip {
+  display: flex;
+  justify-content: center;
+  gap: 3rem;
+  padding: 2.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  width: 100%;
+  margin-top: 3rem;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-number {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   DISCLAIMER
+───────────────────────────────────────────────────────── */
+.disclaimer {
+  max-width: 660px;
+  margin: 2.5rem auto;
+  padding: 1.25rem 1.5rem;
+  background: #f5f3ef;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.disclaimer strong {
+  color: var(--text);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   RESULTS VIEW
+───────────────────────────────────────────────────────── */
+.view-results {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.results-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.results-title {
+  font-family: var(--font-serif);
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.results-meta {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+/* Two-column grid for results */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+/* On small screens, stack columns vertically */
+@media (max-width: 700px) {
+  .results-grid { grid-template-columns: 1fr; }
+}
+
+.col-heading {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+/* Entity (person) result card */
+.entity-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+
+.entity-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.entity-name {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.entity-role {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+  font-style: italic;
+}
+
+/* Small stat badges on each entity card */
+.entity-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.badge {
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 50px;
+  background: #f0ece6;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.badge-accent {
+  background: rgba(139, 26, 26, 0.08);
+  color: var(--accent);
+}
+
+/* Convicted — strong red, most serious */
+.badge-convicted {
+  background: #8b1a1a;
+  color: #fff;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Other legal statuses — charged, deceased, etc. */
+.badge-status {
+  background: #f0e8e8;
+  color: #8b1a1a;
+  text-transform: capitalize;
+}
+
+/* Black book listing */
+.badge-blackbook {
+  background: #1a1a1a;
+  color: #fff;
+  font-weight: 500;
+}
+
+/* Document result card */
+.doc-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 0.65rem;
+}
+
+.doc-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.doc-excerpt {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;  /* Truncate to 3 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.doc-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.4rem;
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.no-results {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   PERSON PROFILE VIEW
+───────────────────────────────────────────────────────── */
+.view-person {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.back-btn {
+  background: transparent;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+
+.back-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.person-hero {
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.person-name {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.person-role {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 1.25rem;
+}
+
+/* Row of stat numbers under the person name */
+.person-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.person-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.person-stat-number {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.person-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* 2-column grid for the info panels */
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 700px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}
+
+.profile-panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.panel-title {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Flight record row */
+.flight-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+  gap: 0.75rem;
+}
+
+.flight-row:last-child { border-bottom: none; }
+
+.flight-route {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.flight-date {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+/* Court case row */
+.court-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.court-row:last-child { border-bottom: none; }
+
+.court-case-name {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.2rem;
+}
+
+.court-meta {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Status dot indicator */
+.status-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.status-open   { background: #2e7d32; }  /* Green = open case */
+.status-closed { background: #9e9e9e; }  /* Gray  = closed case */
+
+/* News article row */
+.news-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+
+.news-row:last-child { border-bottom: none; }
+
+.news-title a {
+  color: var(--text);
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.news-title a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.news-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+/* Full-width documents section */
+.profile-documents {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.doc-row {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.875rem;
+}
+
+.doc-row:last-child { border-bottom: none; }
+
+.doc-row-title {
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.doc-row-excerpt {
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.doc-row-meta {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   INFINITE SCROLL INDICATORS
+───────────────────────────────────────────────────────── */
+
+/* Small count note above the doc list */
+.docs-count-note {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  font-style: italic;
+}
+
+/* "Loading more…" row that appears at the bottom while fetching */
+.docs-loading-more {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+/* Compact spinner used inside the loading-more row */
+.spinner-sm {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   LOADING SPINNER
+───────────────────────────────────────────────────────── */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 0;
+  color: var(--text-muted);
+  gap: 1rem;
+}
+
+/* CSS-only spinning animation */
+.spinner {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);  /* Only the top segment is colored, creating the spinning effect */
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   ERROR MESSAGE
+───────────────────────────────────────────────────────── */
+.error-msg {
+  background: #fdf2f2;
+  border: 1px solid #e8b4b4;
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  color: #8b1a1a;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   SITE FOOTER
+───────────────────────────────────────────────────────── */
+.site-footer {
+  margin-top: 4rem;
+  border-top: 1px solid var(--border);
+  padding: 2rem 1.5rem;
+  background: var(--bg-panel);
+}
+
+.footer-inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.footer-sources {
+  margin-top: 0.5rem;
+}
+
+.footer-sources a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-sources a:hover {
+  color: var(--accent);
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   TOPIC BROWSE SECTION
+───────────────────────────────────────────────────────── */
+
+/* Section wrapper on the home page */
+.topic-section {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto 2rem;
+  padding: 0 1.5rem;
+}
+
+.topic-section-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.topic-section-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* Category group: label + row of cards */
+.topic-category-group {
+  margin-bottom: 1.75rem;
+}
+
+.topic-category-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Horizontal wrapping row of topic cards */
+.topic-category-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* Each topic is a button that looks like a tag/card */
+.topic-card {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  max-width: 280px;
+  font-family: var(--font-sans);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.topic-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  transform: translateY(-1px);
+}
+
+.topic-card-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.topic-card-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Topic context banner shown at top of results when browsing a topic */
+.topic-context {
+  background: #f5f3ef;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.topic-context-desc {
+  margin-bottom: 0.5rem;
+}
+
+/* Small keyword tags shown below the topic description */
+.topic-context-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.topic-kw-tag {
+  background: rgba(139, 26, 26, 0.08);
+  color: var(--accent);
+  border-radius: 50px;
+  padding: 0.15rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   MOBILE RESPONSIVE — ≤ 700px
+   Tablets and large phones in landscape
+───────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+
+  /* Header: hide the tagline, tighten padding */
+  .logo-sub { display: none; }
+
+  .site-header { padding: 0.6rem 1rem; }
+
+  .header-search { max-width: none; }
+
+  /* Hero: cut the generous desktop top padding in half */
+  .hero {
+    padding: 2.5rem 1rem 1.5rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.9rem, 8vw, 2.6rem);
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+    margin: 1rem auto 1.75rem;
+  }
+
+  /* Stats strip: reduce gap so all four stats fit in a row */
+  .stats-strip {
+    gap: 1.25rem;
+    padding: 1.5rem 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .stat-number { font-size: 1.35rem; }
+  .stat-label  { font-size: 0.7rem; }
+
+  /* Results and person views: tighter side padding */
+  .view-results,
+  .view-person {
+    padding: 1.25rem 1rem;
+  }
+
+  .results-title { font-size: 1.4rem; }
+
+  /* Person stats row: tighter gap */
+  .person-stats { gap: 1.25rem; }
+
+  /* Footer: tighter */
+  .site-footer {
+    margin-top: 2.5rem;
+    padding: 1.5rem 1rem;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────
+   SMALL PHONES — ≤ 430px  (iPhone SE, Galaxy S series)
+   Portrait orientation focus
+───────────────────────────────────────────────────────── */
+@media (max-width: 430px) {
+
+  /* Header: single-row logo + search, very compact */
+  .site-header { padding: 0.5rem 0.75rem; }
+
+  .logo-main { font-size: 0.95rem; }
+
+  .header-search-btn {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.8rem;
+  }
+
+  /* Hero: minimal padding so content shows without scrolling */
+  .hero {
+    padding: 1.5rem 0.875rem 1.25rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.65rem, 9vw, 2rem);
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+    margin: 0.75rem auto 1.25rem;
+  }
+
+  /* Search box: tighten and make the button tap-friendly (min 44px) */
+  .search-box {
+    padding: 0.3rem 0.3rem 0.3rem 0.9rem;
+  }
+
+  .search-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.88rem;
+    min-height: 44px;
+  }
+
+  .search-input { font-size: 0.95rem; }
+
+  /* Example tags: smaller */
+  .example-tag  { font-size: 0.73rem; padding: 0.2rem 0.6rem; }
+  .examples-label { font-size: 0.73rem; }
+
+  /* Stats: wrap to 2×2 grid on very narrow screens */
+  .stats-strip {
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    padding: 1.25rem 0.875rem;
+    margin-top: 1.25rem;
+  }
+
+  .stat { min-width: 80px; }
+
+  /* Disclaimer: tighter */
+  .disclaimer {
+    margin: 1.5rem 0.875rem;
+    padding: 1rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  /* Results & person: full-width with minimal chrome */
+  .view-results,
+  .view-person {
+    padding: 1rem 0.75rem;
+  }
+
+  .results-title { font-size: 1.25rem; }
+
+  /* Entity and doc cards: tighter padding */
+  .entity-card  { padding: 0.85rem 1rem; }
+  .doc-card     { padding: 0.75rem 0.875rem; }
+
+  /* Person hero */
+  .person-name {
+    font-size: clamp(1.5rem, 8vw, 2rem);
+  }
+
+  /* Person stats: wrap neatly, 2 per row */
+  .person-stats {
+    gap: 0.75rem 1.5rem;
+  }
+
+  .person-stat-number { font-size: 1.25rem; }
+
+  /* Profile panels */
+  .profile-panel { padding: 1rem; }
+
+  /* Back button: proper touch target */
+  .back-btn {
+    min-height: 44px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* Footer */
+  .site-footer {
+    margin-top: 2rem;
+    padding: 1.25rem 0.75rem;
+  }
+}
