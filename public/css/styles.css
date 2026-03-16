@@ -318,11 +318,11 @@ a:hover {
   display: flex;
   justify-content: center;
   gap: 3rem;
-  padding: 2.5rem 1.5rem;
+  padding: 1.25rem 0;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   width: 100%;
-  margin-top: 3rem;
+  margin: 1.75rem 0 2rem;
 }
 
 .stat {
@@ -352,6 +352,7 @@ a:hover {
    DISCLAIMER
 ───────────────────────────────────────────────────────── */
 .disclaimer {
+  align-self: stretch;   /* Stretch to full width, then max-width + margin:auto centers it */
   max-width: 660px;
   margin: 2.5rem auto;
   padding: 1.25rem 1.5rem;
@@ -887,7 +888,7 @@ a:hover {
 
 /* Section wrapper on the home page */
 .topic-section {
-  width: 100%;
+  align-self: stretch;   /* Stretch to full page width inside the flex column */
   max-width: var(--max-width);
   margin: 0 auto 2rem;
   padding: 0 1.5rem;
@@ -1027,8 +1028,8 @@ a:hover {
   /* Stats strip: reduce gap so all four stats fit in a row */
   .stats-strip {
     gap: 1.25rem;
-    padding: 1.5rem 1rem;
-    margin-top: 1.75rem;
+    padding: 1rem 0;
+    margin: 1.25rem 0 1.5rem;
   }
 
   .stat-number { font-size: 1.35rem; }
@@ -1104,8 +1105,8 @@ a:hover {
   .stats-strip {
     flex-wrap: wrap;
     gap: 1rem 2rem;
-    padding: 1.25rem 0.875rem;
-    margin-top: 1.25rem;
+    padding: 0.875rem 0;
+    margin: 1rem 0 1.25rem;
   }
 
   .stat { min-width: 80px; }
