@@ -1006,6 +1006,155 @@ a:hover {
 
 
 /* ─────────────────────────────────────────────────────────
+   DECLASSIFIED PROGRAMS SECTION
+   Visually distinct from the Epstein topic browser —
+   darker tone to signal "this is a different kind of source"
+───────────────────────────────────────────────────────── */
+
+.declassified-section {
+  width: min(100%, var(--max-width));
+  margin: 0 auto 2.5rem;
+  padding: 0 1.5rem;
+}
+
+.declassified-header {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 2px solid var(--text);
+}
+
+.declassified-title {
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+
+.declassified-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  max-width: 760px;
+}
+
+/* Category group */
+.decl-category-group {
+  margin-bottom: 1.75rem;
+}
+
+.decl-category-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 0.65rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Cards laid out in a responsive grid */
+.decl-category-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 0.85rem;
+}
+
+/* Each card is a full anchor tag — the whole card is clickable */
+.decl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: #1a1a1a;           /* Dark background — signals "classified" gravity */
+  border: 1px solid #333;
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+  color: #e0ddd8;
+}
+
+.decl-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 12px rgba(139, 26, 26, 0.25);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.decl-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.decl-card-name {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.decl-card-source {
+  font-size: 0.7rem;
+  color: var(--accent);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.decl-card-subtitle {
+  font-size: 0.72rem;
+  color: #888;
+  letter-spacing: 0.02em;
+}
+
+.decl-card-desc {
+  font-size: 0.82rem;
+  color: #b0aca6;
+  line-height: 1.55;
+  margin-top: 0.2rem;
+}
+
+/* The "Epstein connection" callout — highlighted in red */
+.decl-card-connection {
+  font-size: 0.78rem;
+  color: #c8a0a0;
+  line-height: 1.5;
+  border-left: 2px solid var(--accent);
+  padding-left: 0.6rem;
+  margin-top: 0.35rem;
+}
+
+.decl-connection-label {
+  font-weight: 600;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.decl-card-count {
+  font-size: 0.7rem;
+  color: #555;
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+/* Mobile: single column */
+@media (max-width: 700px) {
+  .decl-category-cards {
+    grid-template-columns: 1fr;
+  }
+  .declassified-section {
+    padding: 0 1rem;
+  }
+}
+
+
+/* ─────────────────────────────────────────────────────────
    MOBILE RESPONSIVE — ≤ 700px
    Tablets and large phones in landscape
 ───────────────────────────────────────────────────────── */

@@ -959,6 +959,73 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ─────────────────────────────────────────────────────
+  // DECLASSIFIED PROGRAMS
+  // ─────────────────────────────────────────────────────
+  // Fetches the curated list of declassified government
+  // programs from /api/declassified and renders them as
+  // external-link cards grouped by category.
+
+  async function loadDeclassified() {
+    try {
+      const res  = await fetch('/api/declassified');
+      if (!res.ok) throw new Error('Failed');
+      const data = await res.json();
+      renderDeclassifiedGrid(data.programs, data.categories);
+    } catch (e) {
+      const section = document.getElementById('declassified-section');
+      if (section) section.style.display = 'none';
+      console.error('[app] loadDeclassified error:', e);
+    }
+  }
+
+  function renderDeclassifiedGrid(programs, categories) {
+    const grid = document.getElementById('declassified-grid');
+    if (!grid) return;
+
+    // Group programs by category
+    const grouped = {};
+    for (const prog of programs) {
+      if (!grouped[prog.category]) grouped[prog.category] = [];
+      grouped[prog.category].push(prog);
+    }
+
+    const categoryOrder = ['intel_epstein', 'domestic_ops', 'mind_control', 'consciousness'];
+    const categoryLabels = categories || {};
+
+    let html = '';
+    for (const cat of categoryOrder) {
+      if (!grouped[cat]) continue;
+      html += `<div class="decl-category-group">
+        <h3 class="decl-category-label">${escapeHtml(categoryLabels[cat] || cat)}</h3>
+        <div class="decl-category-cards">`;
+
+      for (const prog of grouped[cat]) {
+        html += `
+          <a class="decl-card"
+             href="${escapeHtml(prog.source_url)}"
+             target="_blank"
+             rel="noopener">
+            <div class="decl-card-header">
+              <span class="decl-card-name">${escapeHtml(prog.name)}</span>
+              <span class="decl-card-source">${escapeHtml(prog.source_name)} ↗</span>
+            </div>
+            <div class="decl-card-subtitle">${escapeHtml(prog.subtitle)}</div>
+            <div class="decl-card-desc">${escapeHtml(prog.description)}</div>
+            <div class="decl-card-connection">
+              <span class="decl-connection-label">Epstein connection:</span>
+              ${escapeHtml(prog.connection)}
+            </div>
+            <div class="decl-card-count">${escapeHtml(prog.doc_count)}</div>
+          </a>`;
+      }
+
+      html += `</div></div>`;
+    }
+
+    grid.innerHTML = html;
+  }
+
+  // ─────────────────────────────────────────────────────
   // UTILITY FUNCTIONS
   // ─────────────────────────────────────────────────────
 
@@ -1035,8 +1102,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // These lines "listen" for user actions (clicks, keypresses)
   // and call the appropriate functions in response.
 
-  // Load topic cards on startup
+  // Load topic cards and declassified program cards on startup
   loadTopics();
+  loadDeclassified();
 
   // Home search button click
   homeSearchBtn.addEventListener('click', () => {

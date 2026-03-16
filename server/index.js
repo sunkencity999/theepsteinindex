@@ -26,9 +26,10 @@ const path    = require('path');
 
 // Import our route handlers (the files that define what
 // each API endpoint does)
-const searchRoute = require('./routes/search');
-const personRoute = require('./routes/person');
-const topicRoute  = require('./routes/topic');
+const searchRoute       = require('./routes/search');
+const personRoute       = require('./routes/person');
+const topicRoute        = require('./routes/topic');
+const declassifiedRoute = require('./routes/declassified');
 
 // Import the scheduler that runs hourly updates
 const { startScheduler } = require('./services/scheduler');
@@ -76,9 +77,10 @@ app.use(express.static(path.join(__dirname, '..', 'public')));
 // Any request starting with /api/search  → search.js handles it
 // Any request starting with /api/person  → person.js handles it
 
-app.use('/api/search', searchRoute);
-app.use('/api/person', personRoute);
-app.use('/api/topic',  topicRoute);
+app.use('/api/search',      searchRoute);
+app.use('/api/person',      personRoute);
+app.use('/api/topic',       topicRoute);
+app.use('/api/declassified', declassifiedRoute);
 
 // -------------------------------------------------------
 // FALLBACK ROUTE
