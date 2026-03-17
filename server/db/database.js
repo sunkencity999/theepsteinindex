@@ -102,6 +102,21 @@ async function initTables() {
         fetched_at     TIMESTAMPTZ DEFAULT NOW()
       );
 
+      -- Locally indexed documents from the downloaded Epstein torrent archive.
+      -- Text is extracted from PDFs by index_pdfs.js and bulk-imported by
+      -- upload_index.js. Full-text search runs via PostgreSQL tsvector/GIN.
+      CREATE TABLE IF NOT EXISTS local_documents (
+        id          SERIAL PRIMARY KEY,
+        filename    TEXT NOT NULL,
+        filepath    TEXT UNIQUE NOT NULL,
+        title       TEXT,
+        file_size   BIGINT,
+        page_count  INT,
+        full_text   TEXT,
+        has_text    BOOLEAN GENERATED ALWAYS AS (full_text IS NOT NULL AND full_text != '') STORED,
+        indexed_at  TIMESTAMPTZ DEFAULT NOW()
+      );
+
       -- Indexes speed up lookups on frequently queried columns.
       -- Think of an index like a book's index — faster to find
       -- things without reading the whole book cover to cover.
@@ -109,8 +124,17 @@ async function initTables() {
       CREATE INDEX IF NOT EXISTS idx_news_person_name    ON news_cache(person_name);
       CREATE INDEX IF NOT EXISTS idx_court_person_name   ON court_cache(person_name);
       CREATE INDEX IF NOT EXISTS idx_searches_query      ON searches(query);
+      CREATE INDEX IF NOT EXISTS idx_local_docs_filepath ON local_documents(filepath);
 
     `);
+
+  // GIN index must be created outside the multi-statement string above
+  // (some PostgreSQL drivers don't allow it inline with other DDL).
+  await client.query(`
+    CREATE INDEX IF NOT EXISTS idx_local_docs_fts
+    ON local_documents
+    USING GIN (to_tsvector('english', coalesce(full_text, '') || ' ' || coalesce(title, '')));
+  `);
     console.log('[database] Tables ready.');
   } finally {
     // Always release the client back to the pool when done
@@ -234,6 +258,58 @@ async function replaceCourtForPerson(personName, cases) {
   }
 }
 
+// ── LOCAL DOCUMENTS (from downloaded torrent archive) ──
+
+// Full-text search across locally indexed PDFs.
+// Returns documents whose extracted text or title matches the query.
+async function searchLocalDocs(query, page = 1, limit = 10) {
+  const offset = (page - 1) * limit;
+  try {
+    const result = await pool.query(
+      `SELECT
+         id,
+         title,
+         filename,
+         page_count,
+         file_size,
+         ts_headline(
+           'english',
+           coalesce(full_text, ''),
+           plainto_tsquery('english', $1),
+           'MaxWords=35, MinWords=15, StartSel=<mark>, StopSel=</mark>'
+         ) AS excerpt,
+         ts_rank(
+           to_tsvector('english', coalesce(full_text,'') || ' ' || coalesce(title,'')),
+           plainto_tsquery('english', $1)
+         ) AS rank,
+         indexed_at
+       FROM local_documents
+       WHERE has_text = true
+         AND to_tsvector('english', coalesce(full_text,'') || ' ' || coalesce(title,''))
+             @@ plainto_tsquery('english', $1)
+       ORDER BY rank DESC
+       LIMIT $2 OFFSET $3`,
+      [query, limit, offset]
+    );
+
+    const countResult = await pool.query(
+      `SELECT COUNT(*) FROM local_documents
+       WHERE has_text = true
+         AND to_tsvector('english', coalesce(full_text,'') || ' ' || coalesce(title,''))
+             @@ plainto_tsquery('english', $1)`,
+      [query]
+    );
+
+    return {
+      results: result.rows,
+      total:   parseInt(countResult.rows[0].count, 10)
+    };
+  } catch {
+    // Table may not exist yet (before first import) — return empty
+    return { results: [], total: 0 };
+  }
+}
+
 // ── SEARCHES ──
 
 async function logSearch(query) {
@@ -254,5 +330,6 @@ module.exports = {
   replaceNewsForPerson,
   getCourtForPerson,
   replaceCourtForPerson,
-  logSearch
+  logSearch,
+  searchLocalDocs
 };

@@ -5,6 +5,10 @@
 # Dependencies — never commit these, npm install recreates them
 node_modules/
 
+# Local PDF indexing artifacts — large and machine-specific
+indexed_docs.ndjson
+index_progress.json
+
 # Environment variables — contains database passwords
 .env
 .env.*

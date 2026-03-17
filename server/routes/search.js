@@ -18,6 +18,9 @@ const { searchEntities, fullTextSearch } = require('../services/epsteinApi');
 const { searchPersons, searchDocuments } = require('../services/epsteinExposedApi');
 const db = require('../db/database');
 
+// searchLocalDocs returns { results, total } from the locally indexed PDF archive.
+const { searchLocalDocs } = db;
+
 // -------------------------------------------------------
 // GET /api/search?q=...&page=1&limit=20
 // -------------------------------------------------------
@@ -37,20 +40,23 @@ router.get('/', async (req, res) => {
   // Log the search
   try { await db.logSearch(query); } catch (e) {}
 
-  // ── QUERY ALL FOUR ENDPOINTS IN PARALLEL ──
-  // We fire all four requests at the same time and wait for
-  // all of them to finish. This is much faster than waiting
-  // for each one sequentially.
+  // ── QUERY ALL SOURCES IN PARALLEL ──
+  // Five sources fired at the same time:
+  //   1 & 2 — epsteininvestigation.org  (207k docs)
+  //   3 & 4 — epsteinexposed.com        (2.1M docs)
+  //   5     — local_documents table     (locally indexed PDFs from torrent)
   const [
     eiEntities,   // People from epsteininvestigation.org
     eiDocs,       // Documents from epsteininvestigation.org
     eePersons,    // People from epsteinexposed.com
-    eeDocs        // Documents from epsteinexposed.com (2.1M pool)
+    eeDocs,       // Documents from epsteinexposed.com (2.1M pool)
+    localDocs     // Locally indexed PDFs (from downloaded archive)
   ] = await Promise.all([
     searchEntities(query, page, Math.ceil(limit / 2)),
     fullTextSearch(query, page, 5),
     searchPersons(query, page, Math.ceil(limit / 2)),
-    searchDocuments(query, page, 5)
+    searchDocuments(query, page, 5),
+    searchLocalDocs(query, page, 5)
   ]);
 
   // ── MERGE & DEDUPLICATE PEOPLE ──
@@ -144,10 +150,30 @@ router.get('/', async (req, res) => {
     }
   }
 
-  // Total document count is the SUM from both sources
-  // (minus duplicates is hard to calculate exactly, so we
-  // show a combined figure as a lower bound)
-  const totalDocs     = (eiDocs.total || 0) + (eeDocs.total || 0);
+  // ── ADD LOCAL ARCHIVE DOCS ──
+  // Local documents are ranked by PostgreSQL's ts_rank, so they slot in
+  // after the API results (which are usually more structured/titled).
+  for (const doc of (localDocs.results || [])) {
+    const key = (doc.title || '').toLowerCase().trim();
+    if (!seenTitles.has(key)) {
+      seenTitles.add(key);
+      mergedDocs.push({
+        id:            `local-${doc.id}`,
+        title:         doc.title || doc.filename,
+        excerpt:       doc.excerpt || '',
+        document_date: null,
+        document_type: 'PDF (Local Archive)',
+        source:        'Local Archive',
+        source_url:    null,
+        file_url:      null,
+        page_count:    doc.page_count,
+        _source:       'local'
+      });
+    }
+  }
+
+  // Total document count is the SUM from all sources
+  const totalDocs     = (eiDocs.total || 0) + (eeDocs.total || 0) + (localDocs.total || 0);
   const totalEntities = Math.max(eiEntities.total || 0, eePersons.total || 0);
 
   res.json({
@@ -161,7 +187,8 @@ router.get('/', async (req, res) => {
     // Tell the frontend which sources contributed results
     sources: {
       epsteininvestigation: { entities: eiEntities.total, documents: eiDocs.total },
-      epsteinexposed:       { entities: eePersons.total,  documents: eeDocs.total  }
+      epsteinexposed:       { entities: eePersons.total,  documents: eeDocs.total  },
+      local_archive:        { documents: localDocs.total || 0 }
     }
   });
 });
